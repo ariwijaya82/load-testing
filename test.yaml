@@ -1,0 +1,49 @@
+config:
+  target: "http://149.28.154.143:8080"
+  phases:
+    - duration: 10
+      arrivalRate: 5 # Number of users arriving per second
+      name: Spike phase
+  processor: "./preprocessor.js" # Include custom JS logic for handling token and WebSocket URL
+  payload:
+    path: "responses.csv"
+    fields:
+      - "username"
+      - "password"
+    order: sequence
+    skipHeader: true
+
+scenarios:
+  - name: "Websocket Test"
+    flow:
+      - post:
+          url: "/login"
+          json:
+            username: "{{ username }}"
+            password: "{{ password }}"
+          capture:
+            - json: "$.data.token" # Capture the token from the login response
+              as: "jwtToken"
+
+      - get:
+          url: "/ws_host" # Use JWT to hit the API and get the WebSocket URL
+          headers:
+            Authorization: "Bearer {{ jwtToken }}"
+          capture:
+            - json: "$.data.selected_host" # Capture WebSocket URL from the response
+              as: "wsUrl"
+
+      - function: "connectToWebSocket" # Call custom JS function to handle WebSocket connection
+
+      - loop:
+          - post:
+              url: "http://{{ wsUrl }}/test"
+              json:
+                connection_id: "{{ connId }}"
+                question: "asdasd"
+                choice: "asd"
+                cat_status: 1
+                message: "asd"
+        count: 10
+
+      - think: 10
