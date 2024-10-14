@@ -14,7 +14,7 @@ data_login = {
 
 data_candidate = {
     "cnd_name": "test altillery",
-    "last_name": "11-10",
+    "last_name": "14-10",
     "email": "asd@asd.com",
     "position": "asd",
     "gender": "male",
@@ -44,9 +44,9 @@ candidate_name = "test altillery"
 responses = []
 
 # Sending POST requests 100 times
-for i in range(50):
-    response = requests.post(login_url, json=data_login)
-    if response.status_code == 200:
+response = requests.post(login_url, json=data_login)
+if response.status_code == 200:
+    for i in range(50):
         token = response.json()['data']['token']
         headers = {
             "Authorization": f"Bearer {token}",
@@ -59,10 +59,8 @@ for i in range(50):
             print(f"{candidate_name} {i + 1}")
         else:
             print(f"Request candidate {i+1} failed with status code: {response_candidate.status_code}")
-    else:
-        print(f"Request login {i+1} failed with status code: {response.status_code}")
-
-    time.sleep(2)
+else:
+    print(f"Request login failed with status code: {response.status_code}")
 
 # Save responses to a CSV file
 with open('responses.csv', mode='w', newline='') as csv_file:

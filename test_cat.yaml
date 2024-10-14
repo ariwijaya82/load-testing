@@ -2,7 +2,7 @@ config:
   target: "http://149.28.154.143:8080"
   phases:
     - duration: 10
-      arrivalRate: 5 # Number of users arriving per second
+      arrivalRate: 2 # Number of users arriving per second
       name: Spike phase
   processor: "./preprocessor.js" # Include custom JS logic for handling token and WebSocket URL
   payload:
