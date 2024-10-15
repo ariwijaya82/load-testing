@@ -1,5 +1,7 @@
 'use strict';
 
+let userCounter = 0;
+
 module.exports = {
     connectToWebSocket: function (context, events, done) {
         const WebSocket = require('ws');  // Import WebSocket library
@@ -12,7 +14,7 @@ module.exports = {
 
         // Handle WebSocket connection opened
         wsClient.on('open', function open() {
-            console.log('WebSocket connection established');
+            console.log('WebSocket connection established ', context.vars.userId);
         });
 
         // Handle incoming WebSocket messages
@@ -20,10 +22,11 @@ module.exports = {
             const ws_data = JSON.parse(data)
 
             if (ws_data.message_type === 'init') {
+                console.log(`${context.vars.userId} init`)
                 context.vars.connId = ws_data.data
                 done()
             } else {
-                // console.log(ws_data.data)
+                console.log(`${context.vars.userId} data: ${JSON.stringify(ws_data.data)}`)
             }
         });
 
@@ -35,7 +38,13 @@ module.exports = {
 
         // Handle WebSocket connection close
         wsClient.on('close', function close() {
-            console.log('WebSocket connection closed');
+            console.log('WebSocket connection closed', context.vars.userId);
         });
+    },
+
+    assignUserId: (context, events, done) => {
+        // Assign a unique user ID based on the userCounter
+        context.vars.userId = userCounter++;
+        return done();
     }
 };
