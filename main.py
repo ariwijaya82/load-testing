@@ -46,7 +46,7 @@ responses = []
 # Sending POST requests 100 times
 response = requests.post(login_url, json=data_login)
 if response.status_code == 200:
-    for i in range(50):
+    for i in range(200):
         token = response.json()['data']['token']
         headers = {
             "Authorization": f"Bearer {token}",
@@ -59,6 +59,7 @@ if response.status_code == 200:
             print(f"{candidate_name} {i + 1}")
         else:
             print(f"Request candidate {i+1} failed with status code: {response_candidate.status_code}")
+        time.sleep(0.1)
 else:
     print(f"Request login failed with status code: {response.status_code}")
 

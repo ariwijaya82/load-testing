@@ -26,7 +26,7 @@ module.exports = {
                 context.vars.connId = ws_data.data
                 done()
             } else {
-                console.log(`${context.vars.userId} data: ${JSON.stringify(ws_data.data)}`)
+                // console.log(`${context.vars.userId} data: ${JSON.stringify(ws_data.data)}`)
             }
         });
 
