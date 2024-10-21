@@ -3,18 +3,18 @@ import csv
 import time
 
 # API endpoint
-login_url = "http://149.28.154.143:5000/api/v1/login"  # Replace with your actual API endpoint
-create_candidate_url = "http://149.28.154.143:5000/api/v1/candidate"  # Replace with your actual API endpoint
+login_url = "https://gwsp5-1.asi-asiapacific.com/api/v1/login"  # Replace with your actual API endpoint
+create_candidate_url = "https://gwsp5-1.asi-asiapacific.com/api/v1/candidate"  # Replace with your actual API endpoint
 
 # Data to be sent in POST request (you can customize this as needed)
 data_login = {
-    "username": "user.test.01",
+    "username": "demo.01",
     "password": "pass1234",
 }
 
 data_candidate = {
     "cnd_name": "test altillery",
-    "last_name": "14-10",
+    "last_name": "21-10",
     "email": "asd@asd.com",
     "position": "asd",
     "gender": "male",
@@ -26,7 +26,7 @@ data_candidate = {
     "proctoring": "0",
     "assessment_center": "0",
     "olinterview": "0",
-    "id_battery": 12,
+    "id_battery": 1,
     "id_cnd_group": 0,
     "id_welcome_page": 0,
     "id_biodata_template": 0,
@@ -46,7 +46,7 @@ responses = []
 # Sending POST requests 100 times
 response = requests.post(login_url, json=data_login)
 if response.status_code == 200:
-    for i in range(200):
+    for i in range(2):
         token = response.json()['data']['token']
         headers = {
             "Authorization": f"Bearer {token}",
@@ -59,6 +59,7 @@ if response.status_code == 200:
             print(f"{candidate_name} {i + 1}")
         else:
             print(f"Request candidate {i+1} failed with status code: {response_candidate.status_code}")
+            print()
         time.sleep(0.1)
 else:
     print(f"Request login failed with status code: {response.status_code}")
