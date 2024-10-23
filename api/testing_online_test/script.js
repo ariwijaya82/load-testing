@@ -46,7 +46,7 @@ const handleCATTest = (test_index, context, done) => {
                 console.log("response init cat: ", res.data);
               });
           } else if (ws_data.message_type === "test") {
-            // console.log("message test", ws_data.data);
+            console.log("message test", ws_data.data);
             const cat_status = ws_data.data.cat_status;
             const option = ws_data.data.choice.split("|||");
 
@@ -95,6 +95,10 @@ const handleCATTest = (test_index, context, done) => {
                     Authorization: `Bearer ${context.vars.token}`,
                   },
                 })
+                // .then(() => {
+                //   console.log("submit 1 answer");
+                //   done();
+                // })
                 .catch((err) => {
                   console.log("failed to submit answer test");
                   done(err);

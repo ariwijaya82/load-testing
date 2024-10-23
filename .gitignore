@@ -4,3 +4,4 @@ node_modules/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+/api/testing_online_test/candidate_list.csv
