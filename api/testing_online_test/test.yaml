@@ -9,14 +9,15 @@ config:
     prod:
       target: "https://gwsp5fe-1.asi-asiapacific.com"
       phases:
-        - duration: 10
-          arrivalRate: 10
-          maxVusers: 100
+        - duration: 20
+          arrivalRate: 4
+          # maxVusers: 90
           name: Candidate Spike
   processor: "./script.js"
   payload:
     path: "candidate_list.csv"
     fields:
+      - "id"
       - "username"
       - "password"
     skipHeader: true
@@ -47,23 +48,23 @@ scenarios:
               as: "gender"
 
       # bandwidth check
-      - post:
-          url: "/bw_check"
-          headers:
-            Authorization: "Bearer {{ token }}"
-          json:
-            client_ip: "182.253.80.226 - BIZNET NETWORKS, ID (<20 km)"
-            dl_status: 67.49
-            ul_status: 84.82
-            ping_status: 9.5
-            jitter_status: 8.74
-            test_status: 4
-            dl_progress: 1
-            ul_progress: 1
-            ping_progress: 1
-      # submit biodata
-      - function: "submitBiodata"
-      # check test list
-      - function: "getTestList"
-      # work on all test
-      - function: "doAllTest"
+      # - post:
+      #     url: "/bw_check"
+      #     headers:
+      #       Authorization: "Bearer {{ token }}"
+      #     json:
+      #       client_ip: "182.253.80.226 - BIZNET NETWORKS, ID (<20 km)"
+      #       dl_status: 67.49
+      #       ul_status: 84.82
+      #       ping_status: 9.5
+      #       jitter_status: 8.74
+      #       test_status: 4
+      #       dl_progress: 1
+      #       ul_progress: 1
+      #       ping_progress: 1
+      # # submit biodata
+      # - function: "submitBiodata"
+      # # check test list
+      # - function: "getTestList"
+      # # work on all test
+      # - function: "doAllTest"

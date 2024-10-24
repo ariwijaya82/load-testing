@@ -1,67 +1,30 @@
 config:
-  target: "http:/192.168.10.211:8080"
+  target: "http:/192.168.10.211:5000"
   phases:
     - duration: 1
       arrivalRate: 1
       maxVusers: 100
-      name: Candidate Spike
+      name: Client Spike
   environments:
     prod:
-      target: "https://gwsp5fe-1.asi-asiapacific.com"
+      target: "https://gwsp5-1.asi-asiapacific.com"
       phases:
         - duration: 1
           arrivalRate: 1
           maxVusers: 1
-          name: Candidate Spike
+          name: Client Spike
   processor: "./script.js"
-  payload:
-    path: "candidate_list.csv"
-    fields:
-      - "username"
-      - "password"
-    skipHeader: true
-    order: sequence
 
 scenarios:
-  - name: "Testing CAT test"
+  - name: "Testing Client App"
     flow:
       - function: "logEnv"
       # login
       - post:
           url: "/login"
           json:
-            username: "{{ username }}"
-            password: "{{ password }}"
+            username: "demo.01"
+            password: "pass1234"
           capture:
             - json: "$.data.token"
               as: "token"
-            - json: "$.data.first_name"
-              as: "first_name"
-            - json: "$.data.last_name"
-              as: "last_name"
-            - json: "$.data.email"
-              as: "email"
-            - json: "$.data.gender"
-              as: "gender"
-
-      # bandwidth check
-      - post:
-          url: "/bw_check"
-          headers:
-            Authorization: "Bearer {{ token }}"
-          json:
-            client_ip: "182.253.80.226 - BIZNET NETWORKS, ID (<20 km)"
-            dl_status: 67.49
-            ul_status: 84.82
-            ping_status: 9.5
-            jitter_status: 8.74
-            test_status: 4
-            dl_progress: 1
-            ul_progress: 1
-            ping_progress: 1
-      # submit biodata
-      - function: "submitBiodata"
-      # check test list
-      - function: "getTestList"
-      # work on all test
-      - function: "doAllTest"

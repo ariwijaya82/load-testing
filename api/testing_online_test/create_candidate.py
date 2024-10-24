@@ -35,6 +35,18 @@ data_candidate = {
 # List to store responses
 candidate_list = []
 
+# select action
+print("Action list:")
+print("1. Create")
+print("2. Update")
+action = int(input('Select action (input in number): '))
+while action != 1 and action != 2:
+    print("You select undefined action")
+    print("Action list:")
+    print("1. Create")
+    print("2. Update")
+    action = int(input('Select action (input in number): '))
+
 # select environment
 print("Environment list:")
 print("1. Dev")
@@ -52,34 +64,63 @@ if env == "1":
 elif env == "2":
     gateway_url =gateway_url_prod
 
-# Sending POST requests 100 times
+# Sending POST login
 response_login = requests.post(f"{gateway_url}/login", json={ "username": "demo.01", "password": "pass1234" })
+filename = 'candidate_list.csv'
+
 if response_login.status_code == 200:
     print("You have logged in.")
-    num_candidate = input("Please enter the number of candidate you want to created: ")
-    for i in range(int(num_candidate)):
-        token = response_login.json()['data']['token']
-        headers = {
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json"
-        }
-        data_candidate["last_name"] = f"test-{i + 1}"
-        response_candidate = requests.post(f"{gateway_url}/candidate", json=data_candidate, headers=headers)  # Send POST request with JSON data
-        if response_candidate.status_code == 201:
-            candidate_list.append(response_candidate.json()['data'])
-            print(f"candidate {i+1} created")
-        else:
-            print(f"Request candidate {i+1} failed with status code: {response_candidate.status_code}")
-        time.sleep(0.1)
+
+    if action == 1:
+        num_candidate = input("Please enter the number of candidate you want to created: ")
+        for i in range(int(num_candidate)):
+            token = response_login.json()['data']['token']
+            headers = {
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json"
+            }
+            data_candidate["last_name"] = f"test-{i + 1}"
+            response_candidate = requests.post(f"{gateway_url}/candidate", json=data_candidate, headers=headers)  # Send POST request with JSON data
+            if response_candidate.status_code == 201:
+                candidate_list.append(response_candidate.json()['data'])
+                print(f"candidate {i+1} created")
+            else:
+                print(f"Request candidate {i+1} failed with status code: {response_candidate.status_code}")
+            time.sleep(0.5)
+        
+        # Save responses to a CSV file
+        with open(filename, mode='w', newline='') as csv_file:
+            writer = csv.DictWriter(csv_file, fieldnames=['id', 'username', 'password'])
+
+            writer.writeheader()  # Write header row
+            for candidate in candidate_list:
+                writer.writerow({ "id": candidate["id"], "username": candidate["username"], "password": candidate["password"] })  # Write each response as a row in the CSV
+
+        print(f"Responses saved to {filename}")
+
+    elif action == 2:
+        # Read csv file
+        data = []
+        with open(filename, mode='r') as file:
+            csv_reader = csv.DictReader(file)
+            for row in csv_reader:
+                data.append(row)
+        
+        index = 0
+        for candidate in data:
+            token = response_login.json()['data']['token']
+            headers = {
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json"
+            }
+            response_candidate = requests.put(f"{gateway_url}/candidate/{candidate['id']}", json={'login_count': 0}, headers=headers)  # Send POST request with JSON data
+            if response_candidate.status_code == 200:
+                candidate_list.append(response_candidate.json()['data'])
+                print(f"candidate {index+1} updated")
+            else:
+                print(f"Request update candidate {index+1} failed with status code: {response_candidate.status_code}")
+            time.sleep(0.1)
+            index += 1
+
 else:
     print(f"Request login failed with status code: {response_login.status_code}")
-
-# Save responses to a CSV file
-with open('candidate_list.csv', mode='w', newline='') as csv_file:
-    writer = csv.DictWriter(csv_file, fieldnames=['username', 'password'])
-
-    writer.writeheader()  # Write header row
-    for candidate in candidate_list:
-        writer.writerow({ "username": candidate["username"], "password": candidate["password"] })  # Write each response as a row in the CSV
-
-print("Responses saved to 'candidate_list.csv'")
